@@ -24,19 +24,11 @@ async (req, res) => {
     if (!errors.isEmpty()) {
         return res.send(signupTemplate({ req, errors }));
     }
-    console.log(errors);
 
     const { email, password, passwordConfirmation } = req.body;
-
-    if (password !== passwordConfirmation) {
-        return res.send('Passwords must match');
-    }
-
-    // Create a user in our user repo to represent this person
     const user = await usersRepo.create({ email, password });
 
-    // Store the id of that user inside the users cookie
-    req.session.userId = user.id; // Added by cookie session!
+    req.session.userId = user.id;
 
     res.send('Account created!!!');
 });
@@ -65,6 +57,8 @@ router.post(
         const user = await usersRepo.getOneBy({ email });
 
         req.session.userId = user.id;
+
+        res.send('You are signed in!');
 });
 
 module.exports = router;
