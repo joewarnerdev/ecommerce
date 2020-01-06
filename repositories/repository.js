@@ -1,7 +1,7 @@
 const fs = require('fs');
 const crypto = require('crypto');
 
-module.exports = class Repostiory {
+module.exports = class Repository {
     constructor(filename) {
         if (!filename) {
             throw new Error('Creating a repository requires a filename');
@@ -11,33 +11,28 @@ module.exports = class Repostiory {
         try {
             fs.accessSync(this.filename);
         } catch (err) {
-            fs.writeFileSync(this.filename, '[]')
+            fs.writeFileSync(this.filename, '[]');
         }
     }
 
-    async create() {
+    async create(attrs) {
         attrs.id = this.randomId();
 
         const records = await this.getAll();
-        records.push(attr);
+        records.push(attrs);
         await this.writeAll(records);
+        return attrs;
     }
 
     async getAll() {
-        // Open the file called this.filename
-        const contents = await fs.promises.readFile(this.filename, {
-            encoding: 'utf8'
-        });
-
-        // Parse the contents
-        const data = JSON.parse(contents);
-
-        // Return the parsed data
-        return data;
+        return JSON.parse(
+            await fs.promises.readFile(this.filename, {
+                encoding: 'utf8'
+            })
+        );
     }
 
     async writeAll(records) {
-        // write the updated 'records' array back to this.filename
         await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2));
     }
 
